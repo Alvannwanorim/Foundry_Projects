@@ -1,17 +1,14 @@
-## Foundry
+## Solidity FundMe COntract
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## About
 
-Foundry consists of:
+THis code is to create a smart contract which can be used to donate to a wallet
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## What can it do?
 
-## Documentation
-
-https://book.getfoundry.sh/
+1. Users can send ethereum to this contract
+2. Only the minimum ether amount or above is accepted
+3. The contract owner can withdraw the donations to this contract.
 
 ## Usage
 
