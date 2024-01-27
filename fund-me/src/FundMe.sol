@@ -6,7 +6,7 @@ import "./PriceConverter.sol";
 error FundMe__NotOwner();
 
 /**
- * @title A contract for crowd funding
+ * @title A contract for  funding 
  * @author Alvan N.C
  * @notice This contract is to demo a sample funding contract
  * @dev This implements price feed as our library

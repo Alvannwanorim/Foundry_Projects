@@ -4,6 +4,10 @@ pragma solidity ^0.8.19;
 import {Script} from "forge-std/Script.sol";
 import {MockV3Aggregator} from "../test/mock/MockV3Aggregator.sol";
 
+/// @title A contract to setup deployment configuration
+/// @author Alvan
+/// @notice This is an enviroment sensitive deployment.
+/// @dev All env must be properly set before deployment 
 contract HelperConfig is Script {
     NetworkConfig public activeNetworkConfig;
 

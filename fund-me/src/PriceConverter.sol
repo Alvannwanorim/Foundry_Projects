@@ -5,6 +5,10 @@ pragma solidity ^0.8.19;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 
+/// @title A contract to get the Eth/USD price
+/// @author Alvan
+/// @notice This is an enviroment sensitive deployment.
+/// @dev All env must be properly set before deployment 
 library PriceConverter {
     
     function getPrice(AggregatorV3Interface priceFeed) internal  view returns (uint256) {

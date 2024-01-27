@@ -4,6 +4,12 @@ import {Script, console} from "forge-std/Script.sol";
 import {DevOpsTools} from "foundry-devops/src/DevOpsTools.sol";
 import {FundMe} from "../src/FundMe.sol";
 
+
+
+/// @title A contract for Integration Test
+/// @author Alvan
+/// @notice This is an enviroment sensitive deployment.
+/// @dev All env must be properly set before deployment 
 contract FundFundMe  is Script{
 
     uint256 constant SEND_VALUE = 5 ether;
