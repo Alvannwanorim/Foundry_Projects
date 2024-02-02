@@ -28,21 +28,21 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 //Errors
 
-error Raffle__NotEnoughEth();
-error Raffle__TransferFailed();
-error Raffle___RaffleNotOpen();
-error Raffle__UpkeepNotNeeded(uint256 balance, uint256 players, uint256 raffleState);
-
 /// @title A simple Raffle Contract
 /// @author Alvan
 /// @notice ExplTHis contract is for creating sample Raffle Lottery
 /// @dev Implements Chainlink VRFv2
 
 contract Raffle is VRFConsumerBaseV2 {
+    error Raffle__NotEnoughEth();
+    error Raffle__TransferFailed();
+    error Raffle___RaffleNotOpen();
+    error Raffle__UpkeepNotNeeded(uint256 balance, uint256 players, uint256 raffleState);
+
     //////////////////////
     // Type Declarations//
     /////////////////////
-    enum RAffleState {
+    enum RaffleState {
         OPEN,
         CALCULATING
     }
@@ -64,13 +64,14 @@ contract Raffle is VRFConsumerBaseV2 {
     uint256 private s_lastTimeStamp;
     address payable[] private s_players;
     address private s_recentWinner;
-    RAffleState private s_raffleState;
+    RaffleState private s_raffleState;
 
     //////////////////////
     // Events           //
     /////////////////////
     event EnteredRaffle(address indexed player);
     event PickedWinner(address indexed winner);
+    event RequestRaffleWinner(uint256 indexed requestId);
 
     //////////////////////
     // Modifiers        //
@@ -91,7 +92,7 @@ contract Raffle is VRFConsumerBaseV2 {
         i_gasLane = gasLane;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
-        s_raffleState = RAffleState.OPEN;
+        s_raffleState = RaffleState.OPEN;
     }
 
     /**
@@ -111,7 +112,7 @@ contract Raffle is VRFConsumerBaseV2 {
         returns (bool upkeepNeeded, bytes memory /*performData*/ )
     {
         bool timeHasPassed = (block.timestamp - s_lastTimeStamp) >= i_interval;
-        bool isOpen = RAffleState.OPEN == s_raffleState;
+        bool isOpen = RaffleState.OPEN == s_raffleState;
         bool hasBalance = address(this).balance > 0;
         bool hasPlayers = s_players.length > 0;
         upkeepNeeded = (timeHasPassed && isOpen && hasBalance && hasPlayers);
@@ -123,7 +124,7 @@ contract Raffle is VRFConsumerBaseV2 {
             revert Raffle__NotEnoughEth();
         }
 
-        if (s_raffleState != RAffleState.OPEN) {
+        if (s_raffleState != RaffleState.OPEN) {
             revert Raffle___RaffleNotOpen();
         }
 
@@ -140,17 +141,18 @@ contract Raffle is VRFConsumerBaseV2 {
         if ((block.timestamp - s_lastTimeStamp) < i_interval) {
             revert();
         }
-        s_raffleState = RAffleState.CALCULATING;
-        i_vrfCoordinator.requestRandomWords(
+        s_raffleState = RaffleState.CALCULATING;
+        uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane, i_subscriptionId, REQUEST_CONFIRMATION, i_callbackGasLimit, NUM_WORDS
         );
+        emit RequestRaffleWinner(requestId);
     }
 
     function fulfillRandomWords(uint256, /*requestId*/ uint256[] memory randonWords) internal override {
         uint256 indexOfWinner = randonWords[0] % s_players.length;
         address payable winner = s_players[indexOfWinner];
         s_recentWinner = winner;
-        s_raffleState = RAffleState.OPEN;
+        s_raffleState = RaffleState.OPEN;
 
         s_players = new address payable[](0);
         s_lastTimeStamp = block.timestamp;
@@ -168,5 +170,25 @@ contract Raffle is VRFConsumerBaseV2 {
 
     function getEntranceFee() public view returns (uint256) {
         return i_entranceFee;
+    }
+
+    function getRaffleState() public view returns (RaffleState) {
+        return s_raffleState;
+    }
+
+    function getPlayer(uint256 playerIndex) public view returns (address) {
+        return s_players[playerIndex];
+    }
+
+    function getRecentWinner() public view returns(address) {
+        return s_recentWinner;
+    }
+
+    function getLengthOfPlayers() public view returns(uint256) {
+        return s_players.length;
+    }
+
+    function getLastTimeStamp() public view returns(uint256) {
+        return s_lastTimeStamp;
     }
 }
